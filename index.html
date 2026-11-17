@@ -9197,9 +9197,10 @@ html[data-theme="dark"] .iec-file-preview__warning { color: #ffb1b1; }
     <ul class="hero-chips"><li>No-obligation</li><li>350 Lenders</li><li>Ontario</li></ul>
   </div></div></section>
   <section class="section book-form-section"><div class="container"><div class="book-layout">
-    <form class="book-form-panel" novalidate enctype="multipart/form-data">
+    <form class="book-form-panel" action="https://formsubmit.co/a04121cbfab8a93dc19523a5eb73a1e3" method="POST" novalidate enctype="multipart/form-data">
       <input type="hidden" name="_subject" value="IEC Canada Mortgage &amp; Finance — Consultation Request" />
       <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none" />
+      <input type="hidden" name="_captcha" value="false" />
       <div class="form-grid">
         <div class="field"><label for="bk-name">Full name <span class="field-required">*</span></label><input id="bk-name" name="name" autocomplete="name" required aria-required="true" /></div>
         <div class="field"><label for="bk-email">Email <span class="field-required">*</span></label><input id="bk-email" name="email" type="email" autocomplete="email" required aria-required="true" /></div>
@@ -9598,7 +9599,85 @@ html[data-theme="dark"] .iec-file-preview__warning { color: #ffb1b1; }
         }
       });
     })();
-    wireRealForm('.book-form-panel','IEC Canada Mortgage & Finance — Consultation Request');
+    /* Booking form: same proven delivery path as the homepage contact form.
+       - Without files: FormSubmit AJAX, confirm the response before showing success.
+       - With files: native multipart POST and _next return to the custom book panel.
+       The existing attachment previews, stylesheet and confirmation design are unchanged. */
+    (function wireBookConsultationForm(){
+      var form=document.querySelector('.book-form-panel');
+      if(!form) return;
+
+      function formError(message){
+        var notice=form.querySelector('.form-submit-error[role="alert"]');
+        if(!notice){
+          notice=document.createElement('p');
+          notice.className='form-submit-error';
+          notice.setAttribute('role','alert');
+          form.appendChild(notice);
+        }
+        notice.textContent=message;
+      }
+
+      form.addEventListener('submit',async function(event){
+        event.preventDefault();
+        // The form uses novalidate for its original design, so validate here.
+        if(!form.checkValidity()){
+          form.reportValidity();
+          return;
+        }
+        var notice=form.querySelector('.form-submit-error[role="alert"]');
+        if(notice) notice.remove();
+        var button=form.querySelector('button[type="submit"]');
+        if(button && button.disabled) return;
+
+        var files=form.querySelector('input[type="file"]');
+        var totalBytes=0;
+        if(files && files.files){
+          for(var i=0;i<files.files.length;i++) totalBytes+=files.files[i].size;
+        }
+        if(totalBytes>10*1024*1024){
+          formError('Attachments must be 10 MB or less in total. Please choose smaller files.');
+          return;
+        }
+
+        if(files && files.files && files.files.length){
+          try{
+            sendNativeIECUpload(form,'book');
+          }catch(uploadError){
+            formError(uploadError.message || 'Attachment upload could not start. Please try again.');
+          }
+          return;
+        }
+
+        var initialLabel=button ? button.textContent : '';
+        if(button){button.disabled=true;button.textContent='Sending…';}
+        try{
+          var action=form.getAttribute('action');
+          if(!action || !/^https:\/\/formsubmit\.co\/(?!ajax\/)[a-zA-Z0-9@._-]+$/.test(action)){
+            throw new Error('The form destination is not configured.');
+          }
+          var ajaxEndpoint=action.replace('https://formsubmit.co/', 'https://formsubmit.co/ajax/');
+          var response=await fetch(ajaxEndpoint,{
+            method:'POST',
+            headers:{'Accept':'application/json'},
+            body:buildIECFormData(form)
+          });
+          var result=await response.json().catch(function(){return null;});
+          // A 200 response alone does not prove delivery; require explicit success.
+          if(!response.ok || !result || (result.success!==true && result.success!=='true')){
+            throw new Error(result && typeof result.message==='string' && result.message ? result.message : 'Submission was not confirmed.');
+          }
+          showFormMessage(form,'success','Message sent',
+            'Thanks — your message has been sent to the IEC Mortgage &amp; Finance team. We will get back to you, usually within one business day.');
+        }catch(err){
+          formError('Your consultation request could not be confirmed as sent. '+
+            ((err && err.message) ? err.message : 'Please try again.')+
+            ' You can retry or contact us by email.');
+        }finally{
+          if(button && button.isConnected){button.disabled=false;button.textContent=initialLabel;}
+        }
+      });
+    })();
   })();
 
 
@@ -10148,4 +10227,89 @@ html[data-theme="dark"] .book-form-panel {
   width: 100%;
 }
 
+</style>
+
+<style id="book-consultation-success-aligned-card">
+/* Consultation confirmation: same card geometry in light and dark themes.
+   In a two-column layout the left confirmation stretches to the exact top
+   and bottom edges of its adjacent "What happens next" panel. This only
+   appears after a successful submit/return and never changes form fields. */
+.book-page .book-layout > .form-submit-success {
+  box-sizing: border-box;
+  width: 100%;
+  align-self: stretch;
+  min-width: 0;
+  min-height: 20rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: .85rem;
+  padding: clamp(2.25rem, 3.5vw, 4rem) clamp(1.5rem, 3vw, 3.2rem);
+  border: 1px solid var(--rd-line, #e6eaf2);
+  border-radius: var(--rd-r-lg, 18px);
+  background: #ffffff;
+  box-shadow: var(--rd-sh-sm, 0 8px 22px rgba(11, 32, 71, .06));
+}
+.book-page .book-layout > .form-submit-success .form-submit-success__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 5rem;
+  height: 5rem;
+  margin: 0 0 .9rem;
+  border-radius: 50%;
+  font-size: 2.7rem;
+  font-weight: 600;
+  line-height: 1;
+}
+.book-page .book-layout > .form-submit-success h3 {
+  margin: 0;
+  font-size: clamp(1.85rem, 1.4rem + 1vw, 2.4rem);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -.026em;
+}
+.book-page .book-layout > .form-submit-success p {
+  max-width: 37rem;
+  margin: 0;
+  font-size: clamp(1.05rem, .94rem + .36vw, 1.27rem);
+  line-height: 1.5;
+}
+/* Keep the existing dark-navy, lime, and pale-text colour system. */
+html[data-theme="dark"] .book-page .book-layout > .form-submit-success {
+  background: rgba(2, 32, 79, .9) !important;
+  border-color: rgba(255, 255, 255, .15) !important;
+  box-shadow: 0 16px 24px -24px rgba(255, 255, 255, .1) !important;
+}
+html[data-theme="dark"] .book-page .book-layout > .form-submit-success h3 {
+  color: #f4f7ff;
+}
+html[data-theme="dark"] .book-page .book-layout > .form-submit-success p {
+  color: #cbd6e6;
+}
+html[data-theme="dark"] .book-page .book-layout > .form-submit-success .form-submit-success__icon {
+  background: #d4e000;
+  color: #f4f7ff;
+}
+@media (max-width: 1024px) {
+  /* On stacked tablet/phone layouts the card remains roomy, never oversized. */
+  .book-page .book-layout > .form-submit-success {
+    min-height: clamp(18rem, 38vw, 25rem);
+    padding: 2.5rem 1.5rem;
+  }
+}
+@media (max-width: 520px) {
+  .book-page .book-layout > .form-submit-success .form-submit-success__icon {
+    width: 4.3rem;
+    height: 4.3rem;
+    font-size: 2.25rem;
+    margin-bottom: .4rem;
+  }
+  .book-page .book-layout > .form-submit-success h3 { font-size: 1.8rem; }
+  .book-page .book-layout > .form-submit-success p { font-size: 1rem; }
+}
 </style>
