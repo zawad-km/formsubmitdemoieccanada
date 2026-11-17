@@ -9381,6 +9381,68 @@ html[data-theme="dark"] .iec-file-preview__warning { color: #ffb1b1; }
       return data;
     }
 
+    /* File uploads must use FormSubmit's documented native multipart POST.
+       Its AJAX examples do not document attachment delivery. The _next URL
+       brings the visitor back to the same site's custom success panel. */
+    function sendNativeIECUpload(form, pageKey){
+      var fallbackEndpoint='https://formsubmit.co/a04121cbfab8a93dc19523a5eb73a1e3';
+      var endpoint=form.getAttribute('action') || fallbackEndpoint;
+      if(!/^https:\/\/formsubmit\.co\/(?!ajax\/)[a-zA-Z0-9@._-]+$/.test(endpoint)) endpoint=fallbackEndpoint;
+      if(!/^https?:$/.test(window.location.protocol)){
+        throw new Error('Please test uploads on the published HTTPS website, not from a local file.');
+      }
+      var next=new URL(window.location.href);
+      next.searchParams.set('iec_sent',pageKey);
+      next.hash='';
+      var redirect=form.querySelector('input[name="_next"]');
+      if(!redirect){
+        redirect=document.createElement('input');
+        redirect.type='hidden';redirect.name='_next';
+        form.appendChild(redirect);
+      }
+      redirect.value=next.href;
+      form.method='POST';
+      form.action=endpoint;
+      form.enctype='multipart/form-data';
+      var chooser=form.querySelector('input[type="file"][name]');
+      if(chooser && chooser.files && chooser.files.length>1){
+        // Separate inputs: FormSubmit documents several attachment fields.
+        var selected=Array.prototype.slice.call(chooser.files);
+        var extras=[];
+        try{
+          selected.forEach(function(file,index){
+            var transfer=new DataTransfer();
+            transfer.items.add(file);
+            var field=document.createElement('input');
+            field.type='file';
+            field.name=index===0 ? 'attachment' : 'attachment_'+(index+1);
+            field.hidden=true;
+            field.files=transfer.files;
+            form.appendChild(field);
+            extras.push(field);
+          });
+        }catch(error){
+          extras.forEach(function(field){field.remove();});
+          throw new Error('Could not prepare multiple files in this browser. Please attach one file and try again.');
+        }
+        chooser.disabled=true;
+      }
+      // Native submit avoids intercepting the file through FormSubmit's AJAX API.
+      HTMLFormElement.prototype.submit.call(form);
+    }
+
+    function showReturnedIECConfirmation(){
+      var key=new URLSearchParams(window.location.search).get('iec_sent');
+      var selectors={home:'.wf-booking-form',contact:'.contact-form-panel',book:'.book-form-panel'};
+      if(!Object.prototype.hasOwnProperty.call(selectors,key)) return;
+      var target=document.querySelector(selectors[key]);
+      if(target){
+        showFormMessage(target,'success','Message sent',
+          'Thanks — your message has been sent to the IEC Mortgage &amp; Finance team. We will get back to you, usually within one business day.');
+      }
+    }
+    showReturnedIECConfirmation();
+
     function mailtoFallback(form, subject){
       var fd=new FormData(form), lines=[];
       fd.forEach(function(value,key){
@@ -9411,6 +9473,22 @@ html[data-theme="dark"] .iec-file-preview__warning { color: #ffb1b1; }
           if(invalid){
             invalid.focus();
             if(form.reportValidity) form.reportValidity();
+            return;
+          }
+
+          var upload=form.querySelector('input[type="file"]');
+          if(upload && upload.files && upload.files.length){
+            var total=Array.prototype.reduce.call(upload.files,function(sum,file){return sum+file.size;},0);
+            if(total>10*1024*1024){
+              showFormMessage(form,'error','Attachments too large',
+                'Please use attachments totalling no more than 10 MB.');
+              return;
+            }
+            try{
+              sendNativeIECUpload(form,form.classList.contains('book-form-panel') ? 'book' : 'contact');
+            }catch(uploadError){
+              showFormMessage(form,'error','Attachment could not be sent',uploadError.message || 'Please try again.');
+            }
             return;
           }
 
@@ -9478,6 +9556,15 @@ html[data-theme="dark"] .iec-file-preview__warning { color: #ffb1b1; }
         }
         if(totalBytes>10*1024*1024){
           formError('Attachments must be 10 MB or less in total. Please choose smaller files.');
+          return;
+        }
+
+        if(files && files.files && files.files.length){
+          try{
+            sendNativeIECUpload(form,'home');
+          }catch(uploadError){
+            formError(uploadError.message || 'Attachment upload could not start. Please try again.');
+          }
           return;
         }
 
@@ -9555,7 +9642,13 @@ html[data-theme="dark"] .iec-file-preview__warning { color: #ffb1b1; }
   },{threshold:0.12, rootMargin:'0px 0px -8% 0px'});
   document.querySelectorAll('.pv-reveal').forEach(function(el){ pvObs.observe(el); });
 
-  show('home');
+  var returnedForm=new URLSearchParams(window.location.search).get('iec_sent');
+  show(returnedForm==='contact' || returnedForm==='book' ? returnedForm : 'home');
+  if(returnedForm==='home' || returnedForm==='contact' || returnedForm==='book'){
+    var cleanUrl=new URL(window.location.href);
+    cleanUrl.searchParams.delete('iec_sent');
+    window.history.replaceState(null,'',cleanUrl.pathname+cleanUrl.search+cleanUrl.hash);
+  }
 
   // ---- Calculator math (ported from src/utils) ----
   var PPY={monthly:12,'bi-weekly':26,'accelerated-biweekly':26};
