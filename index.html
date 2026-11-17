@@ -8024,6 +8024,14 @@ html[data-theme="dark"] .career-detail-page .career-detail-text-link { color: #F
 
 
 <style id="book-aside-dark-blue-fix">
+/* Book a Consultation: the light-mode "What happens next" panel uses
+   the same white card surface as the adjacent Message sent panel.
+   Keep the existing dark-mode navy treatment below unchanged. */
+html:not([data-theme="dark"]) .book-page .book-aside {
+  background: #ffffff;
+  border-color: var(--rd-line);
+  box-shadow: var(--rd-sh-sm, 0 8px 22px rgba(11, 32, 71, .06));
+}
 html[data-theme="dark"] .book-aside {
   background: rgba(2, 32, 79, 0.9) !important;
   border-color: rgba(255, 255, 255, .15) !important;
@@ -9402,6 +9410,16 @@ html[data-theme="dark"] .iec-file-preview__warning { color: #ffb1b1; }
         form.appendChild(redirect);
       }
       redirect.value=next.href;
+      // Ensure the documented CAPTCHA opt-out is included in the native
+      // multipart upload, just as it is for text-only submissions.
+      var captchaField=form.querySelector('input[name="_captcha"]');
+      if(!captchaField){
+        captchaField=document.createElement('input');
+        captchaField.type='hidden';
+        captchaField.name='_captcha';
+        form.appendChild(captchaField);
+      }
+      captchaField.value='false';
       form.method='POST';
       form.action=endpoint;
       form.enctype='multipart/form-data';
