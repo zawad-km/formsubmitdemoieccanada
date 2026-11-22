@@ -8692,7 +8692,8 @@ html[data-theme="dark"] .privacy-page .privacy-content-section .privacy-summary 
     <div class="wf-contact-form-outer"><form class="wf-booking-form" action="https://formsubmit.co/khanmajlish74@ieccanada.ca" method="POST" enctype="multipart/form-data">
   <input type="hidden" name="_subject" value="IEC Canada Mortgage &amp; Finance — Home Contact Inquiry" />
   <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none" />
-  <input type="hidden" name="_captcha" value="false" />
+  <input type="hidden" name="_captcha" value="true" />
+    <input type="hidden" name="_next" value="" />
   <div class="wf-form-grid">
     <input class="wf-text-field" name="name" placeholder="Name" type="text" autocomplete="name" required aria-required="true" />
     <input class="wf-text-field" name="phone" placeholder="Phone" type="tel" autocomplete="tel" />
@@ -9061,9 +9062,11 @@ html[data-theme="dark"] .privacy-page .privacy-content-section .privacy-summary 
   <section class="section contact-form-section"><div class="container">
     <p class="eyebrow">Inquiry</p><h2>Send a message</h2>
     <p class="muted contact-section-lead inner-readable">Fill out the form below and your message will be sent to our team. Required fields must be completed before submission.</p>
-    <form class="contact-form-panel" novalidate enctype="multipart/form-data">
+    <form class="contact-form-panel" method="POST" action="https://formsubmit.co/khanmajlish74@ieccanada.ca" enctype="multipart/form-data">
     <input type="hidden" name="_subject" value="IEC Canada Mortgage &amp; Finance — Contact Inquiry" />
     <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none" />
+    <input type="hidden" name="_captcha" value="true" />
+    <input type="hidden" name="_next" value="" />
     <div class="form-grid">
       <div class="field"><label for="fullName">Full Name <span class="field-required" aria-hidden="true">*</span></label><input id="fullName" name="name" autocomplete="name" required aria-required="true" /></div>
       <div class="field"><label for="emailAddress">Email <span class="field-required" aria-hidden="true">*</span></label><input id="emailAddress" name="email" type="email" autocomplete="email" required aria-required="true" /></div>
@@ -9214,9 +9217,11 @@ html[data-theme="dark"] .privacy-page .privacy-content-section .privacy-summary 
     <ul class="hero-chips"><li>No-obligation</li><li>350 Lenders</li><li>Ontario</li></ul>
   </div></div></section>
   <section class="section book-form-section"><div class="container"><div class="book-layout">
-    <form class="book-form-panel" novalidate enctype="multipart/form-data">
+    <form class="book-form-panel" method="POST" action="https://formsubmit.co/khanmajlish74@ieccanada.ca" enctype="multipart/form-data">
       <input type="hidden" name="_subject" value="IEC Canada Mortgage &amp; Finance — Consultation Request" />
       <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none" />
+    <input type="hidden" name="_captcha" value="true" />
+    <input type="hidden" name="_next" value="" />
       <div class="form-grid">
         <div class="field"><label for="bk-name">Full name <span class="field-required">*</span></label><input id="bk-name" name="name" autocomplete="name" required aria-required="true" /></div>
         <div class="field"><label for="bk-email">Email <span class="field-required">*</span></label><input id="bk-email" name="email" type="email" autocomplete="email" required aria-required="true" /></div>
@@ -9363,157 +9368,78 @@ html[data-theme="dark"] .privacy-page .privacy-content-section .privacy-summary 
   })();
 
   (function(){
-    /*
-     * All three site inquiry forms deliver to the same IEC Canada mailbox.
-     * FormSubmit provides the form backend; its first live submission requires
-     * a one-time activation from the recipient mailbox.
-     */
-    var FORM_ENDPOINT = 'https://formsubmit.co/ajax/khanmajlish74@ieccanada.ca';
+    /* FormSubmit CAPTCHA mode: use ordinary browser POST submissions. The
+       hosted CAPTCHA page appears as needed and, on success, FormSubmit
+       redirects back to this site via the per-form _next URL. */
+    var target='https://formsubmit.co/khanmajlish74@ieccanada.ca';
+    var forms=[
+      {selector:'.wf-booking-form',key:'home',page:'home'},
+      {selector:'.contact-form-panel',key:'contact',page:'contact'},
+      {selector:'.book-form-panel',key:'book',page:'book'}
+    ];
 
-    function showFormMessage(form, type, title, body, fallbackHref){
-      var box=document.createElement('div');
-      box.className='form-submit-success';
-      if(type==='error'){
-        box.className='form-submit-success form-submit-error-state';
-        box.innerHTML='<span class="form-submit-success__icon" aria-hidden="true">!</span><h3>'+title+'</h3><p>'+body+'</p>'+
-          (fallbackHref ? '<p><a class="inner-text-link" href="'+fallbackHref+'">Open your email app instead</a></p>' : '');
-      } else {
-        box.innerHTML='<span class="form-submit-success__icon" aria-hidden="true">✓</span><h3>'+title+'</h3><p>'+body+'</p>';
-      }
-      form.parentNode.replaceChild(box, form);
-    }
-
-    function mailtoFallback(form, subject){
-      var fd=new FormData(form), lines=[];
-      fd.forEach(function(value,key){
-        if(key.charAt(0)==='_') return;
-        if(value instanceof File){
-          if(value.name) lines.push('Attachment selected: '+value.name+' (please attach it before sending)');
-        } else if(String(value).trim()) {
-          lines.push(key.replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();})+': '+value);
-        }
-      });
-      return 'mailto:khanmajlish74@ieccanada.ca?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(lines.join('\n'));
-    }
-
-    function wireRealForm(sel, subject){
-      document.querySelectorAll(sel).forEach(function(form){
-        form.addEventListener('submit', async function(e){
-          e.preventDefault();
-          var required=form.querySelectorAll('[required]');
-          var invalid=null;
-          for(var i=0;i<required.length;i++){
-            var el=required[i];
-            el.classList.remove('form-field-invalid');
-            if(!el.checkValidity()){
-              el.classList.add('form-field-invalid');
-              invalid=invalid||el;
-            }
-          }
-          if(invalid){
-            invalid.focus();
-            if(form.reportValidity) form.reportValidity();
-            return;
-          }
-
-          var button=form.querySelector('button[type="submit"], input[type="submit"]');
-          var original=button ? (button.textContent || button.value) : '';
-          if(button){ button.disabled=true; if(button.tagName==='INPUT') button.value='Sending…'; else button.textContent='Sending…'; }
-
-          var data=new FormData(form);
-          try{
-            var response=await fetch(FORM_ENDPOINT, {
-              method:'POST',
-              headers:{'Accept':'application/json'},
-              body:data
-            });
-            var result=await response.json().catch(function(){ return {}; });
-            if(!response.ok || result.success===false){
-              throw new Error(result.message || 'The form could not be sent.');
-            }
-            showFormMessage(form,'success','Message sent','Thanks — your message has been sent to the IEC Mortgage &amp; Finance team. We will get back to you, usually within one business day.');
-          }catch(err){
-            var fallback=mailtoFallback(form, subject);
-            if(button){ button.disabled=false; if(button.tagName==='INPUT') button.value=original; else button.textContent=original; }
-            showFormMessage(form,'error','We couldn’t send the form automatically','Please try again, or use the email-app fallback below. If this is the first time the site is being used, the mailbox may also need to complete the one-time form activation.',fallback);
-          }
-        });
-      });
-    }
-
-    wireRealForm('.contact-form-panel','IEC Canada Mortgage & Finance — Contact Inquiry');
-    /* Homepage contact form: submit using FormSubmit AJAX so visitors remain
-       on the IEC Canada website and see our existing confirmation panel.
-       The normal form action remains as a fallback when JavaScript is off. */
-    (function wireHomepageContactForm(){
-      var form=document.querySelector('.wf-booking-form');
+    forms.forEach(function(config){
+      var form=document.querySelector(config.selector);
       if(!form) return;
-
-      function formError(message){
-        var notice=form.querySelector('.form-submit-error[role="alert"]');
-        if(!notice){
-          notice=document.createElement('p');
-          notice.className='form-submit-error';
-          notice.setAttribute('role','alert');
-          form.appendChild(notice);
-        }
-        notice.textContent=message;
+      form.setAttribute('action', target);
+      form.setAttribute('method','POST');
+      // FormSubmit's hosted CAPTCHA does not use the AJAX endpoint.
+      var captcha=form.querySelector('input[name="_captcha"]');
+      if(captcha) captcha.value='true';
+      var next=form.querySelector('input[name="_next"]');
+      if(next && /^https?:$/.test(window.location.protocol)){
+        var returnUrl=new URL(window.location.href);
+        returnUrl.hash='';
+        returnUrl.search='';
+        returnUrl.searchParams.set('iec_form_sent',config.key);
+        next.value=returnUrl.href;
       }
-
-      form.addEventListener('submit',async function(event){
-        event.preventDefault();
-        if(!form.checkValidity()){
-          form.reportValidity();
-          return;
-        }
-
-        var notice=form.querySelector('.form-submit-error[role="alert"]');
-        if(notice) notice.remove();
-        var button=form.querySelector('button[type="submit"]');
-        if(button && button.disabled) return;
-
-        // Keep the stated 10 MB attachment limit, even for multiple files.
-        var files=form.querySelector('input[type="file"]');
-        var totalBytes=0;
-        if(files && files.files){
-          for(var i=0;i<files.files.length;i++) totalBytes+=files.files[i].size;
-        }
-        if(totalBytes>10*1024*1024){
-          formError('Attachments must be 10 MB or less in total. Please choose smaller files.');
-          return;
-        }
-
-        var initialLabel=button ? button.textContent : '';
-        if(button){button.disabled=true;button.textContent='Sending…';}
-        try{
-          var action=form.getAttribute('action');
-          if(!action || action.indexOf('https://formsubmit.co/')!==0){
-            throw new Error('The form destination is not configured.');
+      // Keep the 10 MB aggregate attachment limit before leaving the site.
+      form.addEventListener('submit',function(e){
+        var inputs=form.querySelectorAll('input[type="file"]');
+        var size=0;
+        inputs.forEach(function(input){
+          Array.prototype.forEach.call(input.files||[],function(file){size+=file.size;});
+        });
+        if(size>10*1024*1024){
+          e.preventDefault();
+          var error=form.querySelector('.iec-upload-size-error');
+          if(!error){
+            error=document.createElement('p');
+            error.className='form-submit-error iec-upload-size-error';
+            error.setAttribute('role','alert');
+            var submit=form.querySelector('button[type="submit"], input[type="submit"]');
+            if(submit) submit.parentNode.insertBefore(error,submit);
+            else form.appendChild(error);
           }
-          var ajaxEndpoint=action.replace('https://formsubmit.co/', 'https://formsubmit.co/ajax/');
-          var response=await fetch(ajaxEndpoint,{
-            method:'POST',
-            headers:{'Accept':'application/json'},
-            body:new FormData(form)
-          });
-          var result=await response.json().catch(function(){return null;});
-          // FormSubmit can return HTTP 200 with success: "false" on errors.
-          // Show confirmation ONLY on an explicit success response.
-          if(!response.ok || !result || (result.success!==true && result.success!=='true')){
-            throw new Error(result && typeof result.message==='string' && result.message ? result.message : 'Submission was not confirmed.');
-          }
-          showFormMessage(form,'success','Message sent',
-            'Thanks — your message has been sent to the IEC Mortgage &amp; Finance team. We will get back to you, usually within one business day.');
-        }catch(err){
-          formError('Your message could not be confirmed as sent. '+
-            ((err && err.message) ? err.message : 'Please try again.')+ 
-            ' You can retry or contact us by email.');
-        }finally{
-          if(button && button.isConnected){button.disabled=false;button.textContent=initialLabel;}
+          error.textContent='Attachments must be 10 MB or less in total.';
         }
       });
-    })();
-    wireRealForm('.book-form-panel','IEC Canada Mortgage & Finance — Consultation Request');
+    });
+
+    // This is displayed after FormSubmit redirects on successful submission.
+    // The query parameter is a navigation signal, not independent proof of
+    // message delivery to the recipient's inbox.
+    var submitted=new URLSearchParams(window.location.search).get('iec_form_sent');
+    var matching=forms.filter(function(f){return f.key===submitted;})[0];
+    if(matching){
+      var form=document.querySelector(matching.selector);
+      if(form && form.parentNode){
+        var panel=document.createElement('div');
+        panel.className='form-submit-success';
+        panel.setAttribute('role','status');
+        panel.innerHTML='<span class="form-submit-success__icon" aria-hidden="true">✓</span>'+
+          '<h3>Message sent</h3>'+
+          '<p>Thanks — your message has been sent to the IEC Mortgage &amp; Finance team. We will get back to you, usually within one business day.</p>';
+        form.parentNode.replaceChild(panel,form);
+        document.body.setAttribute('data-iec-sent-page',matching.page);
+      }
+      if(window.history && window.history.replaceState){
+        var clean=new URL(window.location.href);
+        clean.searchParams.delete('iec_form_sent');
+        window.history.replaceState(null,'',clean.pathname+clean.search+clean.hash);
+      }
+    }
   })();
 
 
@@ -9557,7 +9483,7 @@ html[data-theme="dark"] .privacy-page .privacy-content-section .privacy-summary 
   },{threshold:0.12, rootMargin:'0px 0px -8% 0px'});
   document.querySelectorAll('.pv-reveal').forEach(function(el){ pvObs.observe(el); });
 
-  show('home');
+  show(document.body.getAttribute('data-iec-sent-page') || 'home');
 
   // ---- Calculator math (ported from src/utils) ----
   var PPY={monthly:12,'bi-weekly':26,'accelerated-biweekly':26};
