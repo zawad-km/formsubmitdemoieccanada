@@ -8024,14 +8024,6 @@ html[data-theme="dark"] .career-detail-page .career-detail-text-link { color: #F
 
 
 <style id="book-aside-dark-blue-fix">
-/* Book a Consultation: the light-mode "What happens next" panel uses
-   the same white card surface as the adjacent Message sent panel.
-   Keep the existing dark-mode navy treatment below unchanged. */
-html:not([data-theme="dark"]) .book-page .book-aside {
-  background: #ffffff;
-  border-color: var(--rd-line);
-  box-shadow: var(--rd-sh-sm, 0 8px 22px rgba(11, 32, 71, .06));
-}
 html[data-theme="dark"] .book-aside {
   background: rgba(2, 32, 79, 0.9) !important;
   border-color: rgba(255, 255, 255, .15) !important;
@@ -8473,29 +8465,70 @@ html[data-theme="dark"] .form-submit-success p { color: #cbd6e6; }
 html[data-theme="dark"] .form-submit-error { color: #ff9b9b; }
 </style>
 <style id="dark-form-success-box-match">
-/* Keep both themes' confirmation card EXACTLY the same size and typography.
-   The base .form-submit-success, icon, h3, and p rules are shared by light and
-   dark mode; this override changes ONLY the established dark-mode colours. */
-html[data-theme="dark"] .wf-home-contact .wf-contact-form-outer:has(.form-submit-success) {
-  background: #1E3B61 !important;
-  border: 1px solid rgba(255,255,255,.16) !important;
-  box-shadow: 0 16px 36px -28px rgba(0,0,0,.58);
+/* Dark-mode form confirmation: match the site's high-contrast navy confirmation card. */
+html[data-theme="dark"] .form-submit-success {
+  width: 100%;
+  min-height: clamp(17rem, 30vw, 26rem);
+  box-sizing: border-box;
+  padding: clamp(2.25rem, 4.5vw, 3.75rem) clamp(1.5rem, 4vw, 3rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(.7rem, 1.1vw, .95rem);
+  text-align: center;
+  background: #04214d !important;
+  border: 1px solid rgba(255,255,255,.25) !important;
+  border-radius: 30px;
+  box-shadow: 0 18px 40px -24px rgba(0,0,0,.55);
 }
-html[data-theme="dark"] .wf-home-contact .form-submit-success {
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
+
+html[data-theme="dark"] .form-submit-success__icon {
+  width: clamp(3.75rem, 5vw, 5rem);
+  height: clamp(3.75rem, 5vw, 5rem);
+  flex: 0 0 auto;
+  margin-bottom: clamp(.35rem, .7vw, .65rem);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #d4e000 !important;
+  color: #f4f7ff !important;
+  font-size: clamp(2rem, 2.8vw, 2.75rem);
+  line-height: 1;
+  font-weight: 500;
+  box-shadow: 0 14px 30px -12px rgba(212,224,0,.42);
 }
-html[data-theme="dark"] .wf-home-contact .form-submit-success__icon {
-  background: #D4E000 !important;
-  color: #F4F7FF !important;
-  box-shadow: none;
+
+html[data-theme="dark"] .form-submit-success h3 {
+  margin: 0;
+  color: #f4f7ff !important;
+  font-size: clamp(1.75rem, 2.5vw, 2.35rem);
+  line-height: 1.12;
+  font-weight: 750;
+  letter-spacing: -.025em;
 }
-html[data-theme="dark"] .wf-home-contact .form-submit-success h3 {
-  color: #F4F7FF !important;
+
+html[data-theme="dark"] .form-submit-success p {
+  margin: 0;
+  max-width: 38rem;
+  color: #cbd6e6 !important;
+  font-size: clamp(1rem, 1.3vw, 1.2rem);
+  line-height: 1.38;
 }
-html[data-theme="dark"] .wf-home-contact .form-submit-success p {
-  color: #CBD6E6 !important;
+
+@media (max-width: 640px) {
+  html[data-theme="dark"] .form-submit-success {
+    min-height: 18rem;
+    padding: 2.25rem 1.25rem;
+    border-radius: 24px;
+  }
+  html[data-theme="dark"] .form-submit-success h3 {
+    max-width: 22ch;
+  }
+  html[data-theme="dark"] .form-submit-success p {
+    max-width: 30ch;
+  }
 }
 </style>
 
@@ -8603,30 +8636,6 @@ html[data-theme="dark"] .privacy-page .privacy-content-section .privacy-summary 
   padding: clamp(16px, 1.74vw, 25px) 0 0;
 }
 </style>
-
-<style id="iec-selected-attachments-style">
-/* Selected uploads: a lightweight visual confirmation, without changing the form layout. */
-.iec-file-preview { margin: .6rem 0 .15rem; font-family: inherit; }
-.iec-file-preview[hidden] { display: none !important; }
-.iec-file-preview__summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .55rem; color: #42536b; font-size: .83rem; line-height: 1.45; }
-.iec-file-preview__clear { background: transparent; border: 0; color: #0b2047; font: inherit; font-size: .83rem; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; padding: .15rem; }
-.iec-file-preview__list { margin: 0; padding: 0; list-style: none; display: grid; gap: .45rem; }
-.iec-file-preview__item { min-width: 0; display: flex; align-items: center; gap: .7rem; padding: .55rem .65rem; border: 1px solid rgba(11,32,71,.14); border-radius: .7rem; background: rgba(11,32,71,.035); }
-.iec-file-preview__icon { display: inline-flex; justify-content: center; align-items: center; flex: 0 0 40px; width: 40px; height: 40px; border-radius: .45rem; background: rgba(11,32,71,.09); font-size: 1.15rem; color: #0b2047; }
-.iec-file-preview__thumbnail { flex: 0 0 40px; display: block; width: 40px; height: 40px; object-fit: cover; border-radius: .45rem; }
-.iec-file-preview__details { min-width: 0; display: flex; flex-direction: column; gap: .1rem; }
-.iec-file-preview__filename { display: block; overflow-wrap: anywhere; color: #0b2047; font-weight: 600; font-size: .88rem; line-height: 1.3; }
-.iec-file-preview__filesize { color: #66758a; font-size: .76rem; }
-.iec-file-preview__warning { margin: .55rem 0 0; font-size: .83rem; color: #c23b3b; line-height: 1.45; font-weight: 600; }
-.iec-file-preview__warning[hidden] { display: none !important; }
-html[data-theme="dark"] .iec-file-preview__summary { color: #b9c8dd; }
-html[data-theme="dark"] .iec-file-preview__clear { color: #e5edff; }
-html[data-theme="dark"] .iec-file-preview__item { border-color: rgba(231,240,255,.18); background: rgba(255,255,255,.065); }
-html[data-theme="dark"] .iec-file-preview__icon { color: #e5edff; background: rgba(255,255,255,.1); }
-html[data-theme="dark"] .iec-file-preview__filename { color: #f4f7ff; }
-html[data-theme="dark"] .iec-file-preview__filesize { color: #a8b7cc; }
-html[data-theme="dark"] .iec-file-preview__warning { color: #ffb1b1; }
-</style>
 </head>
 <body>
 
@@ -8680,7 +8689,7 @@ html[data-theme="dark"] .iec-file-preview__warning { color: #ffb1b1; }
     <div class="wf-contact-left"><div><p class="wf-subtitle">Contact</p><h2 class="wf-heading-service">Let&rsquo;s Get In Touch</h2>
       <p class="wf-text">Have questions about buying, refinancing, renewing, or applying for a mortgage? Contact us and take the next step with confidence.</p>
       <div class="wf-contact-direct"><span class="wf-contact-direct__label">Prefer to talk directly?</span><div class="wf-contact-direct__actions"><a href="tel:+16475721191">(647) 572-1191</a><a href="mailto:khanmajlish74@ieccanada.ca">khanmajlish74@ieccanada.ca</a></div></div></div></div>
-    <div class="wf-contact-form-outer"><form class="wf-booking-form" action="https://formsubmit.co/a04121cbfab8a93dc19523a5eb73a1e3" method="POST" enctype="multipart/form-data">
+    <div class="wf-contact-form-outer"><form class="wf-booking-form" action="https://formsubmit.co/khanmajlish74@ieccanada.ca" method="POST" enctype="multipart/form-data">
   <input type="hidden" name="_subject" value="IEC Canada Mortgage &amp; Finance — Home Contact Inquiry" />
   <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none" />
   <input type="hidden" name="_captcha" value="false" />
@@ -9052,14 +9061,13 @@ html[data-theme="dark"] .iec-file-preview__warning { color: #ffb1b1; }
   <section class="section contact-form-section"><div class="container">
     <p class="eyebrow">Inquiry</p><h2>Send a message</h2>
     <p class="muted contact-section-lead inner-readable">Fill out the form below and your message will be sent to our team. Required fields must be completed before submission.</p>
-    <form class="contact-form-panel" action="https://formsubmit.co/a04121cbfab8a93dc19523a5eb73a1e3" method="POST" novalidate enctype="multipart/form-data">
+    <form class="contact-form-panel" novalidate enctype="multipart/form-data">
     <input type="hidden" name="_subject" value="IEC Canada Mortgage &amp; Finance — Contact Inquiry" />
     <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none" />
-    <input type="hidden" name="_captcha" value="false" />
     <div class="form-grid">
       <div class="field"><label for="fullName">Full Name <span class="field-required" aria-hidden="true">*</span></label><input id="fullName" name="name" autocomplete="name" required aria-required="true" /></div>
       <div class="field"><label for="emailAddress">Email <span class="field-required" aria-hidden="true">*</span></label><input id="emailAddress" name="email" type="email" autocomplete="email" required aria-required="true" /></div>
-      <div class="field"><label for="phoneNumber">Phone number</label><input id="phoneNumber" name="phone&nbsp;number" type="tel" autocomplete="tel" /></div>
+      <div class="field"><label for="phoneNumber">Phone</label><input id="phoneNumber" name="phone" type="tel" autocomplete="tel" /></div>
       <div class="field"><label for="service">Service</label><select id="service" name="service"><option value="Purchase">Purchase</option><option value="Renewal">Renewal</option><option value="Refinance">Refinance</option><option value="Investment">Investment</option><option value="Other">Other</option></select></div>
       <div class="field contact-form-field--full"><label for="message">Message <span class="field-required" aria-hidden="true">*</span></label><textarea id="message" name="message" required aria-required="true"></textarea></div>
       <div class="field contact-form-field--full form-attachment-field"><label for="contact-attachment">Attachments <span>(optional)</span></label><input id="contact-attachment" name="attachment" type="file" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" /><small>Optional. You can attach supporting documents or images (up to 10 MB total).</small></div>
@@ -9206,16 +9214,15 @@ html[data-theme="dark"] .iec-file-preview__warning { color: #ffb1b1; }
     <ul class="hero-chips"><li>No-obligation</li><li>350 Lenders</li><li>Ontario</li></ul>
   </div></div></section>
   <section class="section book-form-section"><div class="container"><div class="book-layout">
-    <form class="book-form-panel" action="https://formsubmit.co/a04121cbfab8a93dc19523a5eb73a1e3" method="POST" novalidate enctype="multipart/form-data">
+    <form class="book-form-panel" novalidate enctype="multipart/form-data">
       <input type="hidden" name="_subject" value="IEC Canada Mortgage &amp; Finance — Consultation Request" />
       <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none" />
-      <input type="hidden" name="_captcha" value="false" />
       <div class="form-grid">
         <div class="field"><label for="bk-name">Full name <span class="field-required">*</span></label><input id="bk-name" name="name" autocomplete="name" required aria-required="true" /></div>
         <div class="field"><label for="bk-email">Email <span class="field-required">*</span></label><input id="bk-email" name="email" type="email" autocomplete="email" required aria-required="true" /></div>
-        <div class="field"><label for="bk-phone">Phone number <span class="field-required">*</span></label><input id="bk-phone" name="phone&nbsp;number" type="tel" autocomplete="tel" required aria-required="true" /></div>
+        <div class="field"><label for="bk-phone">Phone <span class="field-required">*</span></label><input id="bk-phone" name="phone" type="tel" autocomplete="tel" required aria-required="true" /></div>
         <div class="field"><label for="bk-service">What can we help with? <span class="field-required">*</span></label><select id="bk-service" name="service" required aria-required="true"><option value="" selected disabled>Select a service</option><option value="Purchase">Purchase</option><option value="Refinance">Refinance</option><option value="Renewal">Renewal</option><option value="Pre-approval">Pre-approval</option><option value="Private / alternative lending">Private / alternative lending</option><option value="Commercial">Commercial</option><option value="Not sure yet">Not sure yet</option></select></div>
-        <div class="field book-field--full"><label for="bk-pref">Preferred day / time to reach you</label><input id="bk-pref" name="preferred&nbsp;time" placeholder="e.g. Weekday mornings, or Tue after 5pm" /></div>
+        <div class="field book-field--full"><label for="bk-pref">Preferred day / time to reach you</label><input id="bk-pref" name="preferred_time" placeholder="e.g. Weekday mornings, or Tue after 5pm" /></div>
         <div class="field book-field--full"><label for="bk-msg">Anything else we should know?</label><textarea id="bk-msg" name="message" rows="4"></textarea></div>
         <div class="field book-field--full form-attachment-field"><label for="book-attachment">Attachments <span>(optional)</span></label><input id="book-attachment" name="attachment" type="file" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" /><small>Optional. You can attach supporting documents or images (up to 10 MB total).</small></div>
       </div>
@@ -9376,93 +9383,6 @@ html[data-theme="dark"] .iec-file-preview__warning { color: #ffb1b1; }
       form.parentNode.replaceChild(box, form);
     }
 
-    /* FormSubmit documents multiple separate file fields for attachments.
-       Give each selected file a distinct field name in AJAX multipart data. */
-    function buildIECFormData(form){
-      var data=new FormData(form);
-      form.querySelectorAll('input[type="file"][name]').forEach(function(input){
-        if(!input.files || input.files.length<2) return;
-        var name=input.name;
-        data.delete(name);
-        Array.prototype.forEach.call(input.files,function(file,index){
-          data.append(index===0 ? name : name+'_'+(index+1),file,file.name);
-        });
-      });
-      return data;
-    }
-
-    /* File uploads must use FormSubmit's documented native multipart POST.
-       Its AJAX examples do not document attachment delivery. The _next URL
-       brings the visitor back to the same site's custom success panel. */
-    function sendNativeIECUpload(form, pageKey){
-      var fallbackEndpoint='https://formsubmit.co/a04121cbfab8a93dc19523a5eb73a1e3';
-      var endpoint=form.getAttribute('action') || fallbackEndpoint;
-      if(!/^https:\/\/formsubmit\.co\/(?!ajax\/)[a-zA-Z0-9@._-]+$/.test(endpoint)) endpoint=fallbackEndpoint;
-      if(!/^https?:$/.test(window.location.protocol)){
-        throw new Error('Please test uploads on the published HTTPS website, not from a local file.');
-      }
-      var next=new URL(window.location.href);
-      next.searchParams.set('iec_sent',pageKey);
-      next.hash='';
-      var redirect=form.querySelector('input[name="_next"]');
-      if(!redirect){
-        redirect=document.createElement('input');
-        redirect.type='hidden';redirect.name='_next';
-        form.appendChild(redirect);
-      }
-      redirect.value=next.href;
-      // Ensure the documented CAPTCHA opt-out is included in the native
-      // multipart upload, just as it is for text-only submissions.
-      var captchaField=form.querySelector('input[name="_captcha"]');
-      if(!captchaField){
-        captchaField=document.createElement('input');
-        captchaField.type='hidden';
-        captchaField.name='_captcha';
-        form.appendChild(captchaField);
-      }
-      captchaField.value='false';
-      form.method='POST';
-      form.action=endpoint;
-      form.enctype='multipart/form-data';
-      var chooser=form.querySelector('input[type="file"][name]');
-      if(chooser && chooser.files && chooser.files.length>1){
-        // Separate inputs: FormSubmit documents several attachment fields.
-        var selected=Array.prototype.slice.call(chooser.files);
-        var extras=[];
-        try{
-          selected.forEach(function(file,index){
-            var transfer=new DataTransfer();
-            transfer.items.add(file);
-            var field=document.createElement('input');
-            field.type='file';
-            field.name=index===0 ? 'attachment' : 'attachment_'+(index+1);
-            field.hidden=true;
-            field.files=transfer.files;
-            form.appendChild(field);
-            extras.push(field);
-          });
-        }catch(error){
-          extras.forEach(function(field){field.remove();});
-          throw new Error('Could not prepare multiple files in this browser. Please attach one file and try again.');
-        }
-        chooser.disabled=true;
-      }
-      // Native submit avoids intercepting the file through FormSubmit's AJAX API.
-      HTMLFormElement.prototype.submit.call(form);
-    }
-
-    function showReturnedIECConfirmation(){
-      var key=new URLSearchParams(window.location.search).get('iec_sent');
-      var selectors={home:'.wf-booking-form',contact:'.contact-form-panel',book:'.book-form-panel'};
-      if(!Object.prototype.hasOwnProperty.call(selectors,key)) return;
-      var target=document.querySelector(selectors[key]);
-      if(target){
-        showFormMessage(target,'success','Message sent',
-          'Thanks — your message has been sent to the IEC Mortgage &amp; Finance team. We will get back to you, usually within one&nbsp;business&nbsp;day.');
-      }
-    }
-    showReturnedIECConfirmation();
-
     function mailtoFallback(form, subject){
       var fd=new FormData(form), lines=[];
       fd.forEach(function(value,key){
@@ -9476,84 +9396,52 @@ html[data-theme="dark"] .iec-file-preview__warning { color: #ffb1b1; }
       return 'mailto:khanmajlish74@ieccanada.ca?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(lines.join('\n'));
     }
 
-    /* Contact page: use exactly the same proven submission paths as Home and Book.
-       Text only => verify FormSubmit AJAX success before showing confirmation.
-       Attachments => native multipart POST + _next return to the contact page.
-       Avoid replacing the form with a success card when a request fails. */
-    (function wireContactPageForm(){
-      var form=document.querySelector('.contact-form-panel');
-      if(!form) return;
+    function wireRealForm(sel, subject){
+      document.querySelectorAll(sel).forEach(function(form){
+        form.addEventListener('submit', async function(e){
+          e.preventDefault();
+          var required=form.querySelectorAll('[required]');
+          var invalid=null;
+          for(var i=0;i<required.length;i++){
+            var el=required[i];
+            el.classList.remove('form-field-invalid');
+            if(!el.checkValidity()){
+              el.classList.add('form-field-invalid');
+              invalid=invalid||el;
+            }
+          }
+          if(invalid){
+            invalid.focus();
+            if(form.reportValidity) form.reportValidity();
+            return;
+          }
 
-      function formError(message){
-        var notice=form.querySelector('.form-submit-error[role="alert"]');
-        if(!notice){
-          notice=document.createElement('p');
-          notice.className='form-submit-error';
-          notice.setAttribute('role','alert');
-          form.appendChild(notice);
-        }
-        notice.textContent=message;
-      }
+          var button=form.querySelector('button[type="submit"], input[type="submit"]');
+          var original=button ? (button.textContent || button.value) : '';
+          if(button){ button.disabled=true; if(button.tagName==='INPUT') button.value='Sending…'; else button.textContent='Sending…'; }
 
-      form.addEventListener('submit',async function(event){
-        event.preventDefault();
-        // The original form uses novalidate for appearance; validate explicitly.
-        if(!form.checkValidity()){
-          form.reportValidity();
-          return;
-        }
-        var notice=form.querySelector('.form-submit-error[role="alert"]');
-        if(notice) notice.remove();
-        var button=form.querySelector('button[type="submit"]');
-        if(button && button.disabled) return;
-
-        var files=form.querySelector('input[type="file"]');
-        var totalBytes=0;
-        if(files && files.files){
-          for(var i=0;i<files.files.length;i++) totalBytes+=files.files[i].size;
-        }
-        if(totalBytes>10*1024*1024){
-          formError('Attachments must be 10 MB or less in total. Please choose smaller files.');
-          return;
-        }
-        if(files && files.files && files.files.length){
+          var data=new FormData(form);
           try{
-            sendNativeIECUpload(form,'contact');
-          }catch(uploadError){
-            formError(uploadError.message || 'Attachment upload could not start. Please try again.');
+            var response=await fetch(FORM_ENDPOINT, {
+              method:'POST',
+              headers:{'Accept':'application/json'},
+              body:data
+            });
+            var result=await response.json().catch(function(){ return {}; });
+            if(!response.ok || result.success===false){
+              throw new Error(result.message || 'The form could not be sent.');
+            }
+            showFormMessage(form,'success','Message sent','Thanks — your message has been sent to the IEC Mortgage &amp; Finance team. We will get back to you, usually within one business day.');
+          }catch(err){
+            var fallback=mailtoFallback(form, subject);
+            if(button){ button.disabled=false; if(button.tagName==='INPUT') button.value=original; else button.textContent=original; }
+            showFormMessage(form,'error','We couldn’t send the form automatically','Please try again, or use the email-app fallback below. If this is the first time the site is being used, the mailbox may also need to complete the one-time form activation.',fallback);
           }
-          return;
-        }
-
-        var initialLabel=button ? button.textContent : '';
-        if(button){button.disabled=true;button.textContent='Sending…';}
-        try{
-          var action=form.getAttribute('action');
-          if(!action || !/^https:\/\/formsubmit\.co\/(?!ajax\/)[a-zA-Z0-9@._-]+$/.test(action)){
-            throw new Error('The form destination is not configured.');
-          }
-          var ajaxEndpoint=action.replace('https://formsubmit.co/', 'https://formsubmit.co/ajax/');
-          var response=await fetch(ajaxEndpoint,{
-            method:'POST',
-            headers:{'Accept':'application/json'},
-            body:buildIECFormData(form)
-          });
-          var result=await response.json().catch(function(){return null;});
-          // A 200 response is insufficient: require explicit success.
-          if(!response.ok || !result || (result.success!==true && result.success!=='true')){
-            throw new Error(result && typeof result.message==='string' && result.message ? result.message : 'Submission was not confirmed.');
-          }
-          showFormMessage(form,'success','Message sent',
-            'Thanks — your message has been sent to the IEC Mortgage &amp; Finance team. We will get back to you, usually within one&nbsp;business&nbsp;day.');
-        }catch(err){
-          formError('Your message could not be confirmed as sent. '+
-            ((err && err.message) ? err.message : 'Please try again.')+
-            ' You can retry or contact us by email.');
-        }finally{
-          if(button && button.isConnected){button.disabled=false;button.textContent=initialLabel;}
-        }
+        });
       });
-    })();
+    }
+
+    wireRealForm('.contact-form-panel','IEC Canada Mortgage & Finance — Contact Inquiry');
     /* Homepage contact form: submit using FormSubmit AJAX so visitors remain
        on the IEC Canada website and see our existing confirmation panel.
        The normal form action remains as a fallback when JavaScript is off. */
@@ -9595,15 +9483,6 @@ html[data-theme="dark"] .iec-file-preview__warning { color: #ffb1b1; }
           return;
         }
 
-        if(files && files.files && files.files.length){
-          try{
-            sendNativeIECUpload(form,'home');
-          }catch(uploadError){
-            formError(uploadError.message || 'Attachment upload could not start. Please try again.');
-          }
-          return;
-        }
-
         var initialLabel=button ? button.textContent : '';
         if(button){button.disabled=true;button.textContent='Sending…';}
         try{
@@ -9615,7 +9494,7 @@ html[data-theme="dark"] .iec-file-preview__warning { color: #ffb1b1; }
           var response=await fetch(ajaxEndpoint,{
             method:'POST',
             headers:{'Accept':'application/json'},
-            body:buildIECFormData(form)
+            body:new FormData(form)
           });
           var result=await response.json().catch(function(){return null;});
           // FormSubmit can return HTTP 200 with success: "false" on errors.
@@ -9624,7 +9503,7 @@ html[data-theme="dark"] .iec-file-preview__warning { color: #ffb1b1; }
             throw new Error(result && typeof result.message==='string' && result.message ? result.message : 'Submission was not confirmed.');
           }
           showFormMessage(form,'success','Message sent',
-            'Thanks — your message has been sent to the IEC Mortgage &amp; Finance team. We will get back to you, usually within one&nbsp;business&nbsp;day.');
+            'Thanks — your message has been sent to the IEC Mortgage &amp; Finance team. We will get back to you, usually within one business day.');
         }catch(err){
           formError('Your message could not be confirmed as sent. '+
             ((err && err.message) ? err.message : 'Please try again.')+ 
@@ -9634,85 +9513,7 @@ html[data-theme="dark"] .iec-file-preview__warning { color: #ffb1b1; }
         }
       });
     })();
-    /* Booking form: same proven delivery path as the homepage contact form.
-       - Without files: FormSubmit AJAX, confirm the response before showing success.
-       - With files: native multipart POST and _next return to the custom book panel.
-       The existing attachment previews, stylesheet and confirmation design are unchanged. */
-    (function wireBookConsultationForm(){
-      var form=document.querySelector('.book-form-panel');
-      if(!form) return;
-
-      function formError(message){
-        var notice=form.querySelector('.form-submit-error[role="alert"]');
-        if(!notice){
-          notice=document.createElement('p');
-          notice.className='form-submit-error';
-          notice.setAttribute('role','alert');
-          form.appendChild(notice);
-        }
-        notice.textContent=message;
-      }
-
-      form.addEventListener('submit',async function(event){
-        event.preventDefault();
-        // The form uses novalidate for its original design, so validate here.
-        if(!form.checkValidity()){
-          form.reportValidity();
-          return;
-        }
-        var notice=form.querySelector('.form-submit-error[role="alert"]');
-        if(notice) notice.remove();
-        var button=form.querySelector('button[type="submit"]');
-        if(button && button.disabled) return;
-
-        var files=form.querySelector('input[type="file"]');
-        var totalBytes=0;
-        if(files && files.files){
-          for(var i=0;i<files.files.length;i++) totalBytes+=files.files[i].size;
-        }
-        if(totalBytes>10*1024*1024){
-          formError('Attachments must be 10 MB or less in total. Please choose smaller files.');
-          return;
-        }
-
-        if(files && files.files && files.files.length){
-          try{
-            sendNativeIECUpload(form,'book');
-          }catch(uploadError){
-            formError(uploadError.message || 'Attachment upload could not start. Please try again.');
-          }
-          return;
-        }
-
-        var initialLabel=button ? button.textContent : '';
-        if(button){button.disabled=true;button.textContent='Sending…';}
-        try{
-          var action=form.getAttribute('action');
-          if(!action || !/^https:\/\/formsubmit\.co\/(?!ajax\/)[a-zA-Z0-9@._-]+$/.test(action)){
-            throw new Error('The form destination is not configured.');
-          }
-          var ajaxEndpoint=action.replace('https://formsubmit.co/', 'https://formsubmit.co/ajax/');
-          var response=await fetch(ajaxEndpoint,{
-            method:'POST',
-            headers:{'Accept':'application/json'},
-            body:buildIECFormData(form)
-          });
-          var result=await response.json().catch(function(){return null;});
-          // A 200 response alone does not prove delivery; require explicit success.
-          if(!response.ok || !result || (result.success!==true && result.success!=='true')){
-            throw new Error(result && typeof result.message==='string' && result.message ? result.message : 'Submission was not confirmed.');
-          }
-          showFormMessage(form,'success','Message sent',
-            'Thanks — your message has been sent to the IEC Mortgage &amp; Finance team. We will get back to you, usually within one&nbsp;business&nbsp;day.');
-        }catch(err){
-          formError('Your consultation request could not be confirmed as sent. '+
-            ((err && err.message) ? err.message : 'Please try again.')+
-            ' You can retry or contact us by email.');
-        }finally{
-          if(button && button.isConnected){button.disabled=false;button.textContent=initialLabel;}
-        }
-      });
-    })();
+    wireRealForm('.book-form-panel','IEC Canada Mortgage & Finance — Consultation Request');
   })();
 
 
@@ -9756,13 +9557,7 @@ html[data-theme="dark"] .iec-file-preview__warning { color: #ffb1b1; }
   },{threshold:0.12, rootMargin:'0px 0px -8% 0px'});
   document.querySelectorAll('.pv-reveal').forEach(function(el){ pvObs.observe(el); });
 
-  var returnedForm=new URLSearchParams(window.location.search).get('iec_sent');
-  show(returnedForm==='contact' || returnedForm==='book' ? returnedForm : 'home');
-  if(returnedForm==='home' || returnedForm==='contact' || returnedForm==='book'){
-    var cleanUrl=new URL(window.location.href);
-    cleanUrl.searchParams.delete('iec_sent');
-    window.history.replaceState(null,'',cleanUrl.pathname+cleanUrl.search+cleanUrl.hash);
-  }
+  show('home');
 
   // ---- Calculator math (ported from src/utils) ----
   var PPY={monthly:12,'bi-weekly':26,'accelerated-biweekly':26};
@@ -9899,79 +9694,6 @@ html[data-theme="dark"] .iec-file-preview__warning { color: #ffb1b1; }
   window.addEventListener('resize', function () {
     if (window.innerWidth > 1279) setOpen(false);
   }, { passive: true });
-})();
-</script>
-
-<script id="iec-selected-attachments-script">
-(function(){
-  'use strict';
-  var maxBytes=10*1024*1024;
-  var inputs=document.querySelectorAll('.wf-booking-form input[type="file"], .contact-form-panel input[type="file"], .book-form-panel input[type="file"]');
-  function friendlySize(bytes){
-    if(bytes<1024) return bytes+' B';
-    if(bytes<1024*1024) return (bytes/1024).toFixed(1)+' KB';
-    return (bytes/(1024*1024)).toFixed(2)+' MB';
-  }
-  inputs.forEach(function(input){
-    var region=document.createElement('div');
-    region.className='iec-file-preview';
-    region.hidden=true;
-    region.setAttribute('aria-live','polite');
-    var summary=document.createElement('div'); summary.className='iec-file-preview__summary';
-    var count=document.createElement('span');
-    var clear=document.createElement('button');
-    clear.type='button'; clear.className='iec-file-preview__clear'; clear.textContent='Remove files';
-    summary.appendChild(count); summary.appendChild(clear);
-    var list=document.createElement('ul'); list.className='iec-file-preview__list';
-    var warning=document.createElement('p'); warning.className='iec-file-preview__warning'; warning.hidden=true;
-    region.appendChild(summary); region.appendChild(list); region.appendChild(warning);
-    var helper=input.parentElement.querySelector('small');
-    if(helper) helper.insertAdjacentElement('afterend',region);
-    else input.insertAdjacentElement('afterend',region);
-
-    function render(){
-      while(list.firstChild) list.firstChild.remove();
-      var files=Array.prototype.slice.call(input.files||[]);
-      region.hidden=files.length===0;
-      if(!files.length){ warning.hidden=true; return; }
-      var total=files.reduce(function(sum,file){ return sum+file.size; },0);
-      count.textContent=files.length+' '+(files.length===1?'file selected':'files selected')+' · '+friendlySize(total)+' total';
-      warning.hidden=total<=maxBytes;
-      warning.textContent=total>maxBytes ? 'Attachments exceed the 10 MB combined limit. Choose smaller files before sending.' : '';
-      files.forEach(function(file){
-        var item=document.createElement('li'); item.className='iec-file-preview__item';
-        if(file.type && file.type.indexOf('image/')===0){
-          var thumb=document.createElement('img'); thumb.className='iec-file-preview__thumbnail';
-          thumb.alt='';
-          var src=URL.createObjectURL(file);
-          thumb.onload=function(){URL.revokeObjectURL(src);};
-          thumb.onerror=function(){URL.revokeObjectURL(src);};
-          thumb.src=src;
-          item.appendChild(thumb);
-        } else {
-          var icon=document.createElement('span'); icon.className='iec-file-preview__icon';
-          icon.setAttribute('aria-hidden','true'); icon.textContent='📎'; item.appendChild(icon);
-        }
-        var details=document.createElement('span'); details.className='iec-file-preview__details';
-        var filename=document.createElement('span'); filename.className='iec-file-preview__filename'; filename.textContent=file.name;
-        var filesize=document.createElement('span'); filesize.className='iec-file-preview__filesize'; filesize.textContent=friendlySize(file.size);
-        details.appendChild(filename); details.appendChild(filesize); item.appendChild(details);
-        list.appendChild(item);
-      });
-    }
-    input.addEventListener('change',render);
-    clear.addEventListener('click',function(){ input.value=''; render(); input.focus(); });
-    var form=input.form || input.closest('form');
-    if(form){
-      form.addEventListener('submit',function(event){
-        var bytes=Array.prototype.reduce.call(input.files||[],function(sum,file){return sum+file.size;},0);
-        if(bytes>maxBytes){
-          event.preventDefault(); event.stopImmediatePropagation();
-          render(); input.focus();
-        }
-      },true);
-    }
-  });
 })();
 </script>
 </body>
@@ -10262,167 +9984,4 @@ html[data-theme="dark"] .book-form-panel {
   width: 100%;
 }
 
-</style>
-
-<style id="book-consultation-success-aligned-card">
-/* Consultation confirmation: same card geometry in light and dark themes.
-   In a two-column layout the left confirmation stretches to the exact top
-   and bottom edges of its adjacent "What happens next" panel. This only
-   appears after a successful submit/return and never changes form fields. */
-.book-page .book-layout > .form-submit-success {
-  box-sizing: border-box;
-  width: 100%;
-  align-self: stretch;
-  min-width: 0;
-  min-height: 20rem;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: .85rem;
-  padding: clamp(2.25rem, 3.5vw, 4rem) clamp(1.5rem, 3vw, 3.2rem);
-  border: 1px solid var(--rd-line, #e6eaf2);
-  border-radius: var(--rd-r-lg, 18px);
-  background: #ffffff;
-  box-shadow: var(--rd-sh-sm, 0 8px 22px rgba(11, 32, 71, .06));
-}
-.book-page .book-layout > .form-submit-success .form-submit-success__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  width: 5rem;
-  height: 5rem;
-  margin: 0 0 .9rem;
-  border-radius: 50%;
-  font-size: 2.7rem;
-  font-weight: 600;
-  line-height: 1;
-}
-.book-page .book-layout > .form-submit-success h3 {
-  margin: 0;
-  font-size: clamp(1.85rem, 1.4rem + 1vw, 2.4rem);
-  font-weight: 700;
-  line-height: 1.12;
-  letter-spacing: -.026em;
-}
-.book-page .book-layout > .form-submit-success p {
-  max-width: 37rem;
-  margin: 0;
-  font-size: clamp(1.05rem, .94rem + .36vw, 1.27rem);
-  line-height: 1.5;
-}
-/* Keep the existing dark-navy, lime, and pale-text colour system. */
-html[data-theme="dark"] .book-page .book-layout > .form-submit-success {
-  background: rgba(2, 32, 79, .9) !important;
-  border-color: rgba(255, 255, 255, .15) !important;
-  box-shadow: 0 16px 24px -24px rgba(255, 255, 255, .1) !important;
-}
-html[data-theme="dark"] .book-page .book-layout > .form-submit-success h3 {
-  color: #f4f7ff;
-}
-html[data-theme="dark"] .book-page .book-layout > .form-submit-success p {
-  color: #cbd6e6;
-}
-html[data-theme="dark"] .book-page .book-layout > .form-submit-success .form-submit-success__icon {
-  background: #d4e000;
-  color: #f4f7ff;
-}
-@media (max-width: 1024px) {
-  /* On stacked tablet/phone layouts the card remains roomy, never oversized. */
-  .book-page .book-layout > .form-submit-success {
-    min-height: clamp(18rem, 38vw, 25rem);
-    padding: 2.5rem 1.5rem;
-  }
-}
-@media (max-width: 520px) {
-  .book-page .book-layout > .form-submit-success .form-submit-success__icon {
-    width: 4.3rem;
-    height: 4.3rem;
-    font-size: 2.25rem;
-    margin-bottom: .4rem;
-  }
-  .book-page .book-layout > .form-submit-success h3 { font-size: 1.8rem; }
-  .book-page .book-layout > .form-submit-success p { font-size: 1rem; }
-}
-</style>
-
-<style id="contact-page-matching-success-card">
-/* Only the Contact-page confirmation, not the form or other success panels.
-   Match the other two working confirmations in both colour modes. */
-.contact-page .contact-form-section .container > .form-submit-success {
-  box-sizing: border-box;
-  width: 100%;
-  min-width: 0;
-  min-height: clamp(21rem, 33vw, 29rem);
-  margin: 1.75rem 0 0;
-  padding: clamp(2.25rem, 4vw, 4rem) clamp(1.3rem, 4vw, 4rem);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: .85rem;
-  text-align: center;
-  background: #fff;
-  border: 1px solid var(--rd-line, #e6eaf2);
-  border-radius: var(--rd-r-lg, 18px);
-  box-shadow: var(--rd-sh-sm, 0 8px 22px rgba(11,32,71,.06));
-}
-.contact-page .contact-form-section .form-submit-success__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  width: 5rem;
-  height: 5rem;
-  margin-bottom: .75rem;
-  border-radius: 50%;
-  background: #d4e000;
-  color: #0b2047;
-  font-size: 2.7rem;
-  font-weight: 600;
-  line-height: 1;
-}
-.contact-page .contact-form-section .form-submit-success h3 {
-  margin: 0;
-  color: #0b2047;
-  font-size: clamp(1.85rem, 1.4rem + 1vw, 2.4rem);
-  font-weight: 700;
-  line-height: 1.12;
-  letter-spacing: -.026em;
-}
-.contact-page .contact-form-section .form-submit-success p {
-  max-width: 37rem;
-  margin: 0;
-  color: var(--rd-muted, #66758a);
-  font-size: clamp(1.05rem, .94rem + .36vw, 1.27rem);
-  line-height: 1.5;
-}
-html[data-theme="dark"] .contact-page .contact-form-section .container > .form-submit-success {
-  background: rgba(2,32,79,.9) !important;
-  border-color: rgba(255,255,255,.15) !important;
-  box-shadow: 0 16px 24px -24px rgba(255,255,255,.1) !important;
-}
-html[data-theme="dark"] .contact-page .contact-form-section .form-submit-success h3 { color: #f4f7ff; }
-html[data-theme="dark"] .contact-page .contact-form-section .form-submit-success p { color: #cbd6e6; }
-html[data-theme="dark"] .contact-page .contact-form-section .form-submit-success__icon {
-  background: #d4e000;
-  color: #f4f7ff;
-}
-@media (max-width: 520px) {
-  .contact-page .contact-form-section .container > .form-submit-success {
-    min-height: 19rem;
-    padding: 2.3rem 1.3rem;
-  }
-  .contact-page .contact-form-section .form-submit-success__icon {
-    width: 4.3rem;
-    height: 4.3rem;
-    font-size: 2.25rem;
-    margin-bottom: .4rem;
-  }
-  .contact-page .contact-form-section .form-submit-success h3 { font-size: 1.8rem; }
-  .contact-page .contact-form-section .form-submit-success p { font-size: 1rem; }
-}
 </style>
