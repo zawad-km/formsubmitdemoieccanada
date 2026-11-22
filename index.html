@@ -8464,71 +8464,122 @@ html[data-theme="dark"] .form-submit-success h3 { color: #f4f7ff; }
 html[data-theme="dark"] .form-submit-success p { color: #cbd6e6; }
 html[data-theme="dark"] .form-submit-error { color: #ff9b9b; }
 </style>
-<style id="dark-form-success-box-match">
-/* Dark-mode form confirmation: match the site's high-contrast navy confirmation card. */
-html[data-theme="dark"] .form-submit-success {
-  width: 100%;
-  min-height: clamp(17rem, 30vw, 26rem);
+<style id="iec-form-success-light-dark-refinement">
+/* Unified confirmation card for Home, Contact and Book a Consultation.
+   The same spacing and structure work in both light and dark modes. */
+.form-submit-success {
   box-sizing: border-box;
-  padding: clamp(2.25rem, 4.5vw, 3.75rem) clamp(1.5rem, 4vw, 3rem);
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: clamp(.7rem, 1.1vw, .95rem);
+  width: 100%;
+  min-height: clamp(17rem, 26vw, 22rem);
+  margin: 0;
+  padding: clamp(2.15rem, 3.5vw, 3.25rem) clamp(1.3rem, 4vw, 3rem);
+  border: 1px solid rgba(11, 32, 71, .13) !important;
+  border-top: 4px solid #d4e000 !important;
+  border-radius: 24px;
+  background: linear-gradient(145deg, #ffffff 0%, #fafcff 100%) !important;
+  box-shadow: 0 14px 38px -26px rgba(11, 32, 71, .28);
+  color: #102b50;
   text-align: center;
-  background: #04214d !important;
-  border: 1px solid rgba(255,255,255,.25) !important;
-  border-radius: 30px;
-  box-shadow: 0 18px 40px -24px rgba(0,0,0,.55);
+  overflow: hidden;
+  animation: iec-confirm-in .42s ease-out both;
 }
-
-html[data-theme="dark"] .form-submit-success__icon {
-  width: clamp(3.75rem, 5vw, 5rem);
-  height: clamp(3.75rem, 5vw, 5rem);
-  flex: 0 0 auto;
-  margin-bottom: clamp(.35rem, .7vw, .65rem);
-  border-radius: 50%;
+.form-submit-success__icon {
+  box-sizing: border-box;
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
+  width: clamp(3.5rem, 5vw, 4.25rem);
+  height: clamp(3.5rem, 5vw, 4.25rem);
+  margin: 0 0 1.25rem;
+  border-radius: 50%;
   background: #d4e000 !important;
-  color: #f4f7ff !important;
-  font-size: clamp(2rem, 2.8vw, 2.75rem);
+  color: #0b2047 !important;
+  font-family: inherit;
+  font-size: clamp(1.75rem, 2.6vw, 2.15rem);
   line-height: 1;
-  font-weight: 500;
-  box-shadow: 0 14px 30px -12px rgba(212,224,0,.42);
+  font-weight: 800;
+  box-shadow: 0 10px 24px -14px rgba(96, 112, 0, .42);
 }
-
-html[data-theme="dark"] .form-submit-success h3 {
-  margin: 0;
-  color: #f4f7ff !important;
-  font-size: clamp(1.75rem, 2.5vw, 2.35rem);
-  line-height: 1.12;
+.form-submit-success h3 {
+  max-width: 100%;
+  margin: 0 0 .75rem;
+  color: #0b2047 !important;
+  font-family: inherit;
+  font-size: clamp(1.45rem, 1.55vw + .65rem, 1.85rem);
   font-weight: 750;
+  line-height: 1.2;
   letter-spacing: -.025em;
+  text-wrap: balance;
 }
-
-html[data-theme="dark"] .form-submit-success p {
+.form-submit-success p {
+  max-width: 39ch;
   margin: 0;
-  max-width: 38rem;
-  color: #cbd6e6 !important;
-  font-size: clamp(1rem, 1.3vw, 1.2rem);
-  line-height: 1.38;
+  color: #52647d !important;
+  font-size: clamp(.95rem, .24vw + .88rem, 1.04rem);
+  line-height: 1.65;
+  font-weight: 400;
+  text-wrap: pretty;
 }
-
+/* The homepage already has a decorative form shell. Avoid a double card. */
+.wf-home-contact .wf-contact-form-outer:has(> .form-submit-success) {
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 24px;
+  box-shadow: none !important;
+}
+/* Reproduce the form's original top separation on the Contact page. */
+.contact-page .contact-form-section .form-submit-success {
+  margin-top: 1.75rem;
+}
+/* The booking page places this card in the same grid cell as its form. */
+.book-page .book-layout > .form-submit-success {
+  min-width: 0;
+}
+html[data-theme="dark"] .form-submit-success {
+  border-color: rgba(255, 255, 255, .18) !important;
+  border-top-color: #d4e000 !important;
+  background: linear-gradient(145deg, #082b56 0%, #04214d 100%) !important;
+  box-shadow: 0 18px 38px -26px rgba(0, 0, 0, .6);
+  color: #f4f7ff;
+}
+html[data-theme="dark"] .form-submit-success__icon {
+  background: #d4e000 !important;
+  color: #0b2047 !important;
+  box-shadow: 0 10px 24px -13px rgba(212, 224, 0, .27);
+}
+html[data-theme="dark"] .form-submit-success h3 {
+  color: #f4f7ff !important;
+}
+html[data-theme="dark"] .form-submit-success p {
+  color: #cbd6e6 !important;
+}
 @media (max-width: 640px) {
-  html[data-theme="dark"] .form-submit-success {
-    min-height: 18rem;
-    padding: 2.25rem 1.25rem;
-    border-radius: 24px;
+  .form-submit-success {
+    min-height: 17rem;
+    padding: 2.2rem 1.25rem;
+    border-radius: 20px;
   }
-  html[data-theme="dark"] .form-submit-success h3 {
-    max-width: 22ch;
+  .form-submit-success__icon { margin-bottom: 1.15rem; }
+  .form-submit-success h3 { margin-bottom: .7rem; }
+  .form-submit-success p { max-width: 32ch; }
+  .wf-home-contact .wf-contact-form-outer:has(> .form-submit-success) {
+    border-radius: 20px;
   }
-  html[data-theme="dark"] .form-submit-success p {
-    max-width: 30ch;
-  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .form-submit-success { animation: none; }
+}
+@keyframes iec-confirm-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>
 
@@ -8692,7 +8743,7 @@ html[data-theme="dark"] .privacy-page .privacy-content-section .privacy-summary 
     <div class="wf-contact-form-outer"><form class="wf-booking-form" action="https://formsubmit.co/b9e99b7dfc599195f84c780cb83a8fa5" method="POST" enctype="multipart/form-data">
   <input type="hidden" name="_subject" value="IEC Canada Mortgage &amp; Finance — Home Contact Inquiry" />
   <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none" />
-  <input type="hidden" name="_captcha" value="true" />
+  <input type="hidden" name="_captcha" value="false" />
     <input type="hidden" name="_next" value="" />
   <div class="wf-form-grid">
     <input class="wf-text-field" name="name" placeholder="Name" type="text" autocomplete="name" required aria-required="true" />
@@ -9065,7 +9116,7 @@ html[data-theme="dark"] .privacy-page .privacy-content-section .privacy-summary 
     <form class="contact-form-panel" action="https://formsubmit.co/b9e99b7dfc599195f84c780cb83a8fa5" method="POST" enctype="multipart/form-data">
     <input type="hidden" name="_subject" value="IEC Canada Mortgage &amp; Finance — Contact Inquiry" />
     <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none" />
-    <input type="hidden" name="_captcha" value="true" />
+    <input type="hidden" name="_captcha" value="false" />
     <input type="hidden" name="_next" value="" />
     <div class="form-grid">
       <div class="field"><label for="fullName">Full Name <span class="field-required" aria-hidden="true">*</span></label><input id="fullName" name="name" autocomplete="name" required aria-required="true" /></div>
@@ -9220,7 +9271,7 @@ html[data-theme="dark"] .privacy-page .privacy-content-section .privacy-summary 
     <form class="book-form-panel" action="https://formsubmit.co/b9e99b7dfc599195f84c780cb83a8fa5" method="POST" enctype="multipart/form-data">
       <input type="hidden" name="_subject" value="IEC Canada Mortgage &amp; Finance — Consultation Request" />
       <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none" />
-    <input type="hidden" name="_captcha" value="true" />
+    <input type="hidden" name="_captcha" value="false" />
     <input type="hidden" name="_next" value="" />
       <div class="form-grid">
         <div class="field"><label for="bk-name">Full name <span class="field-required">*</span></label><input id="bk-name" name="name" autocomplete="name" required aria-required="true" /></div>
@@ -9368,9 +9419,8 @@ html[data-theme="dark"] .privacy-page .privacy-content-section .privacy-summary 
   })();
 
   (function(){
-    /* FormSubmit CAPTCHA mode: use ordinary browser POST submissions. The
-       hosted CAPTCHA page appears as needed and, on success, FormSubmit
-       redirects back to this site via the per-form _next URL. */
+    /* Submit all three forms without FormSubmit CAPTCHA, retaining normal
+       browser POST and the site's existing custom confirmation via _next. */
     var target='https://formsubmit.co/b9e99b7dfc599195f84c780cb83a8fa5';
     var forms=[
       {selector:'.wf-booking-form',key:'home',page:'home'},
@@ -9383,9 +9433,9 @@ html[data-theme="dark"] .privacy-page .privacy-content-section .privacy-summary 
       if(!form) return;
       form.setAttribute('action', target);
       form.setAttribute('method','POST');
-      // FormSubmit's hosted CAPTCHA does not use the AJAX endpoint.
+      // Keep the CAPTCHA disabled for every form (including on navigation).
       var captcha=form.querySelector('input[name="_captcha"]');
-      if(captcha) captcha.value='true';
+      if(captcha) captcha.value='false';
       var next=form.querySelector('input[name="_next"]');
       if(next && /^https?:$/.test(window.location.protocol)){
         var returnUrl=new URL(window.location.href);
