@@ -9419,9 +9419,10 @@ html[data-theme="dark"] .privacy-page .privacy-content-section .privacy-summary 
   })();
 
   (function(){
-    /* IEC inline form submission: send via FormSubmit AJAX so the browser
-       never visits the FormSubmit confirmation page. Only display the local
-       confirmation after the provider explicitly acknowledges the submission. */
+    /* IEC forms: JSON/AJAX for text-only messages, and FormSubmit's documented
+       native multipart POST for attachments. Native uploads run in a hidden
+       iframe and return to this page using FormSubmit's _next feature, so the
+       visitor never navigates away and success is shown only after a callback. */
     var target='https://formsubmit.co/b9e99b7dfc599195f84c780cb83a8fa5';
     var ajaxTarget='https://formsubmit.co/ajax/b9e99b7dfc599195f84c780cb83a8fa5';
     var forms=[
@@ -9463,25 +9464,135 @@ html[data-theme="dark"] .privacy-page .privacy-content-section .privacy-summary 
     forms.forEach(function(config){
       var form=document.querySelector(config.selector);
       if(!form) return;
-      // Keep an ordinary POST only as a fallback when JavaScript is disabled.
-      // With JavaScript enabled, the listener always prevents navigation.
       form.setAttribute('action',target);
       form.setAttribute('method','POST');
       form.setAttribute('enctype','multipart/form-data');
       var captcha=form.querySelector('input[name="_captcha"]');
       if(captcha) captcha.value='false';
-      // _next was for the old server redirect flow; never submit it via AJAX.
-      var next=form.querySelector('input[name="_next"]');
-      if(next) next.remove();
+      // The success callback is added only when an actual file is being sent.
+      var oldNext=form.querySelector('input[name="_next"]');
+      if(oldNext) oldNext.remove();
       var sending=false;
+      var fileInputs=Array.prototype.slice.call(form.querySelectorAll('input[type="file"]'));
+      fileInputs.forEach(function(input){
+        var status=document.createElement('small');
+        status.className='iec-file-selection-summary';
+        status.setAttribute('aria-live','polite');
+        status.style.cssText='display:block;margin-top:.4rem;overflow-wrap:anywhere;line-height:1.45;';
+        input.insertAdjacentElement('afterend',status);
+        input.addEventListener('change',function(){
+          var files=Array.prototype.slice.call(input.files || []);
+          if(!files.length){ status.textContent=''; return; }
+          var total=files.reduce(function(sum,file){return sum+file.size;},0);
+          status.textContent=files.length===1
+            ? 'Selected: '+files[0].name+' ('+(total/1024/1024).toFixed(2)+' MB)'
+            : files.length+' files selected ('+(total/1024/1024).toFixed(2)+' MB total): '+
+              files.map(function(file){return file.name;}).join(', ');
+        });
+      });
+
+      function submitNativeUpload(done){
+        /* Multiple files are split into separate named file inputs because
+           FormSubmit documents several individual file fields, not the HTML
+           `multiple` attribute on a single input. Preserve the visible picker. */
+        var allFiles=[];
+        fileInputs.forEach(function(input){
+          Array.prototype.forEach.call(input.files || [],function(file){ allFiles.push(file); });
+        });
+        var extraInputs=[];
+        var disabled=[];
+        var frame=null;
+        var oldTarget=form.getAttribute('target');
+        var token='iec-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
+        var timer=null;
+        var settled=false;
+
+        function cleanup(){
+          if(timer!==null) window.clearTimeout(timer);
+          if(oldTarget===null) form.removeAttribute('target');
+          else form.setAttribute('target',oldTarget);
+          extraInputs.forEach(function(item){item.remove();});
+          disabled.forEach(function(item){item.disabled=false;});
+          if(frame) frame.remove();
+        }
+        function finish(ok){
+          if(settled) return;
+          settled=true;
+          cleanup();
+          done(ok, ok ? '' : 'We could not confirm that your attachments were delivered. Please contact our team if this continues.');
+        }
+        try {
+          if(allFiles.length>1){
+            if(typeof DataTransfer!=='function') throw new Error('Browser cannot prepare multiple uploads');
+            allFiles.forEach(function(file,i){
+              var dt=new DataTransfer();
+              dt.items.add(file);
+              var field=document.createElement('input');
+              field.type='file';
+              field.name='attachment_'+(i+1);
+              field.tabIndex=-1;
+              field.setAttribute('aria-hidden','true');
+              field.style.cssText='position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;';
+              field.files=dt.files;
+              if(!field.files || field.files.length!==1) throw new Error('Could not prepare file upload');
+              form.appendChild(field);
+              extraInputs.push(field);
+            });
+            fileInputs.forEach(function(input){
+              if(!input.disabled){input.disabled=true;disabled.push(input);}
+            });
+          }
+          // A random URL marker guarantees that only a successful same-origin
+          // return from FormSubmit's _next can produce the success message.
+          var returnUrl=new URL(window.location.href);
+          returnUrl.hash='';
+          returnUrl.searchParams.set('iec-upload-confirmed',token);
+          var next=document.createElement('input');
+          next.type='hidden'; next.name='_next'; next.value=returnUrl.href;
+          form.appendChild(next);
+          extraInputs.push(next);
+          var sourceUrl=document.createElement('input');
+          sourceUrl.type='hidden'; sourceUrl.name='_url';
+          sourceUrl.value=window.location.origin+window.location.pathname;
+          form.appendChild(sourceUrl);
+          extraInputs.push(sourceUrl);
+
+          frame=document.createElement('iframe');
+          frame.name='iec-upload-target-'+config.key+'-'+token;
+          frame.title='IEC secure form submission';
+          frame.setAttribute('aria-hidden','true');
+          frame.tabIndex=-1;
+          frame.style.cssText='position:absolute;width:0;height:0;border:0;opacity:0;pointer-events:none;';
+          document.body.appendChild(frame);
+          form.setAttribute('target',frame.name);
+          frame.addEventListener('load',function(){
+            if(settled) return;
+            try {
+              var iframeUrl=new URL(frame.contentWindow.location.href);
+              if(iframeUrl.origin===window.location.origin &&
+                 iframeUrl.searchParams.get('iec-upload-confirmed')===token){
+                finish(true);
+              }
+              // A FormSubmit error page is cross-origin, and cannot be read.
+              // Do not mistake an iframe load event for successful delivery.
+            }catch(err){ /* Cross-origin response: await a valid _next return. */ }
+          });
+          // Never report success just because the hidden iframe loaded.
+          timer=window.setTimeout(function(){finish(false);},90000);
+          HTMLFormElement.prototype.submit.call(form);
+        }catch(err){finish(false);}
+      }
+
       form.addEventListener('submit',async function(e){
         e.preventDefault();
         if(sending) return;
         clearError(form);
 
-        var size=0;
-        form.querySelectorAll('input[type="file"]').forEach(function(input){
-          Array.prototype.forEach.call(input.files||[],function(file){size+=file.size;});
+        var size=0, count=0;
+        fileInputs.forEach(function(input){
+          Array.prototype.forEach.call(input.files||[],function(file){
+            size+=file.size; count++;
+          });
         });
         if(size>10*1024*1024){
           showError(form,'Attachments must be 10 MB or less in total.');
@@ -9497,39 +9608,7 @@ html[data-theme="dark"] .privacy-page .privacy-content-section .privacy-summary 
           else submit.textContent='Sending…';
         }
         form.setAttribute('aria-busy','true');
-        try {
-          // FormSubmit documents JSON for AJAX. Send plain forms as JSON;
-          // use multipart FormData only when a visitor attaches an actual file.
-          var fields=new FormData(form);
-          var headers={'Accept':'application/json'};
-          var body;
-          if(size===0){
-            var values={};
-            fields.forEach(function(value,key){
-              if(typeof value==='string') values[key]=value;
-            });
-            headers['Content-Type']='application/json';
-            body=JSON.stringify(values);
-          } else {
-            // Do not set Content-Type for multipart: the browser adds its boundary.
-            body=fields;
-          }
-          var response=await fetch(ajaxTarget,{
-            method:'POST',
-            body:body,
-            headers:headers
-          });
-          if(!response.ok) throw new Error('HTTP '+response.status);
-          var data=await response.json();
-          // FormSubmit sometimes returns 'true'/'false' as strings. Never
-          // interpret a nonempty 'false' string as a successful submission.
-          if(!data || (data.success!==true && data.success!=='true')){
-            throw new Error('FormSubmit did not confirm submission');
-          }
-          showSuccess(form,config);
-        } catch(err) {
-          showError(form,'Your message could not be sent. Please check your connection and try again.');
-        } finally {
+        function complete(ok,message){
           sending=false;
           form.removeAttribute('aria-busy');
           if(submit){
@@ -9537,6 +9616,33 @@ html[data-theme="dark"] .privacy-page .privacy-content-section .privacy-summary 
             if(submit.tagName==='INPUT') submit.value=originalText;
             else submit.textContent=originalText;
           }
+          if(ok) showSuccess(form,config);
+          else showError(form,message || 'Your message could not be sent. Please check your connection and try again.');
+        }
+        if(count){
+          submitNativeUpload(complete);
+          return;
+        }
+        try {
+          // No attachments: the documented JSON AJAX endpoint avoids a redirect.
+          var fields=new FormData(form);
+          var values={};
+          fields.forEach(function(value,key){
+            if(typeof value==='string') values[key]=value;
+          });
+          var response=await fetch(ajaxTarget,{
+            method:'POST',
+            body:JSON.stringify(values),
+            headers:{'Accept':'application/json','Content-Type':'application/json'}
+          });
+          if(!response.ok) throw new Error('HTTP '+response.status);
+          var data=await response.json();
+          if(!data || (data.success!==true && data.success!=='true')){
+            throw new Error('FormSubmit did not confirm submission');
+          }
+          complete(true);
+        } catch(err) {
+          complete(false);
         }
       });
     });
